@@ -1,0 +1,26 @@
+name: "OpenWrt Imagesbuilder"
+description: "Build Glinet Imagesbuilder"
+author: aparcar
+runs:
+  using: 'composite'
+  steps:
+    - run: |
+        echo "::set-output name=artifacts_dir::${ARTIFACTS_DIR:-$GITHUB_WORKSPACE}"
+        echo "::set-output name=feed_dir::${FEED_DIR:-$GITHUB_WORKSPACE}"
+      shell: bash
+      id: inputs
+    - run: sudo chown -R 1000:1000 ${{ steps.inputs.outputs.artifacts_dir }} ${{ steps.inputs.outputs.feed_dir }}
+      shell: bash
+    - run: |
+        sudo apt update && sudo apt upgrade -y
+        sudo apt install device-tree-compiler gawk gcc git g++ make ncurses-dev python unzip -y
+      shell: bash
+    - run: |
+        echo "==========$CUSTOM"
+        for DEP in $CUSTOM; do ./scripts/feeds install "$DEP" done
+        python3 gl_image.py -i -p MODEL -e PACKAGES --custom CUSTOM
+      shell: bash
+    - run: sudo chown -R --reference=${{ steps.inputs.outputs.artifacts_dir }}/.. ${{ steps.inputs.outputs.artifacts_dir }}
+      shell: bash
+    - run: sudo chown -R --reference=${{ steps.inputs.outputs.feed_dir }}/.. ${{ steps.inputs.outputs.feed_dir }}
+      shell: bash
