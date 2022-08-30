@@ -5,8 +5,8 @@ import os
 import sys
 import json
 import getopt
+import commands
 import time
-# import commands
 import platform
 import hashlib
 from subprocess import check_call
@@ -30,7 +30,6 @@ def usage(pname):
     print(" -c|--config         User-defined configuration file")
     print(" -h|--help           Show this text message")
     print(" -o|--output         Get firmware info, firmware name/md5sum/size")
-    print(" -j|--json           Specify a different images.json file")
     print(" --offline           Ignore opensource ipk update")
     print("")
     print("Example: ")
@@ -110,11 +109,11 @@ class Config:
                 self.data = json.load(fd)
                 fd.close()
         except:
-            print("Oops! Failed to parse %s" % self.filename)
+            print "Oops! Failed to parse %s" % self.filename
             sys.exit(1)
 
     def dump(self):
-        print("%s" % self.data)
+        print "%s" % self.data
 
     def imagesList(self):
         if self.data.has_key("profiles"):
@@ -204,11 +203,11 @@ class Config:
 
 def show_images(images=[]):
     if images:
-        print("User-defined Profiles:\n")
+        print "User-defined Profiles:\n"
         for img in images:
-            print("  %s" % img)
+            print "  %s" % img
     else:
-        print("No any profile found")
+        print "No any profile found"
 
 
 makeIndex = re.sub('[\t\n ]+', ' ', """
@@ -267,7 +266,6 @@ def create_files(im_path, board, ver, dev_type):
                      (dev_type, tmpfiles + "/etc/glproduct"), shell=True)
 
     # version.date
-    # return_code, output = commands.getstatusoutput("date \"+%F %k:%M:%S\"")
     # check_output("echo %s > %s" % (output, tmpfiles+ "/etc/version.date"), shell=True)
     compile_time = time.strftime(
         '%Y-%m-%d %k:%M:%S', time.localtime(time.time()))
@@ -287,9 +285,8 @@ def create_files(im_path, board, ver, dev_type):
 
     return tmpfiles
 
-
 def download_custom_ipk(imageName, path, args):
-    import requests
+    import urllib2
     ipks = args.split(',')
     if not ipks or len(ipks) == 0:
         sys.exit(1)
@@ -300,8 +297,9 @@ def download_custom_ipk(imageName, path, args):
         i['url'] = item.split('=')[1]
         _tmp.append(i)
     for arg in _tmp:
-        releases = requests.get(arg['url']).json()
-        latest = max(releases, key=lambda x: x["published_at"])
+        response = urllib2.urlopen(arg['url'])
+        releases = response.read()
+        latest = max(json.loads(releases), key=lambda x:x["published_at"])
         archs = {
             'ath79': 'mips_24kc',
             'ramips': 'mipsel_24kc',
@@ -310,13 +308,12 @@ def download_custom_ipk(imageName, path, args):
             'x86_64': 'x86_64'
         }
         for item in latest['assets']:
-            if arg['name'] in item['name'] and archs.get(imageName.split('-')[2], False):
-                ipk = requests.get(item.browser_download_url)
-                with open(path+"/package", "wb") as f:
-                    f.write(ipk.content)
+            if (arg['name'] in item['name']) and (archs.get(imageName.split('-')[2], '') in item['name']):
+                print(archs.get(imageName.split('-')[2], False))
+                ipk = urllib2.urlopen(item['browser_download_url']).read()
+                open(path+"/packages/"+item['name'], 'wb').write(ipk)
                 break
     return
-
 
 def main(argv):
     # if os.path.exists("files") == False:
@@ -343,6 +340,7 @@ def main(argv):
     files = ""
     build_all = False
     images = []
+    customipk = ''
 
     for (o, v) in opts:
         if o in ("-a", "--all"):
@@ -379,11 +377,13 @@ def main(argv):
             customipk = v
 
     dir_name = "glinet"
-
+    curpwd = os.getcwd()
+    # print("=======================================",offline)
     if not os.path.isdir(dir_name):
-        check_call("git clone --single-branch -b %s --depth=1 %s %s" % (branch, gl_inet_ipks_url, dir_name), shell=True)
-        # check_call("git clone  %s %s" %
-        #            (gl_inet_ipks_url, dir_name), shell=True)
+        check_call("git clone -b %s --depth=1 %s %s" %
+                    (branch, gl_inet_ipks_url, dir_name), shell=True)
+    # check_call("git clone  %s %s" %
+    #            (gl_inet_ipks_url, dir_name), shell=True)
 
     c = Config(filename)
 
@@ -430,22 +430,13 @@ def main(argv):
 
         # Search imagebuilder path
         im_path = os.getcwd() + "/imagebuilder/" + c.getImagebuilderPath(image)
-
+        
         # Clean up glinet tmp file Packages/Packages.gz/Packages.manifest
         CleanupGlinetTmpFile(im_path)
-
+        
         if not os.path.isdir(im_path):
             c.downloadImagebuilder(
                 image, "imagebuilder/" + c.getImagebuilderPath(image))
-        # elif c.getProfile(image) == "QSDK_Premium":
-        #    print("Update imagebuilder repository ......")
-        #    check_call("git pull", shell=True, cwd=im_path)
-        # else:
-        #     print("Update imagebuilder repository ......")
-        #     check_call("git pull", shell=True, cwd=im_path)
-
-        # clean binary file
-        check_call("rm -rf bin/*", shell=True, cwd=im_path)
 
         # Make index for glinet
         os.environ["TOPDIR"] = im_path
@@ -458,6 +449,7 @@ def main(argv):
 
         env = {"PKG_PATH": "%s/glinet/%s" % (os.getcwd(), board)}
         try:
+            print(makeIndex,env)
             check_call(['/bin/sh', '-c', '%s; if makeIndex; then makeIndex; fi'
                         % makeIndex], env=env, cwd=im_path)
         except:
@@ -467,6 +459,7 @@ def main(argv):
         # Offline mode
         if c.getProfile(image) != "QSDK_Premium":
             if offline:
+                print("ttttttttttttttttttttttttttttttttttttttttt")
                 check_call("cp %s/glinet/%s/Packages dl/glinet" %
                            (os.getcwd(), board), shell=True, cwd=im_path)
                 check_call("cp packages/Packages dl/imagebuilder",
@@ -476,6 +469,7 @@ def main(argv):
                 check_call(
                     "sed -i 's/#.*\s*$(OPKG) update/# $(OPKG) update/g' Makefile", shell=True, cwd=im_path)
             else:
+                print(im_path)
                 check_call(
                     "sed -i 's/#\s.*$(OPKG) update/$(OPKG) update/g' Makefile", shell=True, cwd=im_path)
 
@@ -495,7 +489,10 @@ def main(argv):
             merge_files(files, tmpfiles)
 
         # Download custom ipk
-        download_custom_ipk(c.getImagebuilderName(), im_path, customipk)
+        print('------------------------------------',
+              extra_ipks, profile, customipk)
+        if customipk:
+            download_custom_ipk(c.getImagebuilderName(image), im_path, customipk)
 
         # Output directory
         compile_time = time.strftime('%Y%m%d', time.localtime(time.time()))
@@ -535,8 +532,7 @@ def main(argv):
                         fw_name = bin_dir + "/" + "qsdk-" + image + "-" + \
                             c.getVersion(image) + "-" + time.strftime("%m%d",
                                                                       time.localtime()) + os.path.splitext(output)[-1]
-                        os.system('mv ' + output + ' ' + fw_name)
-                    # return_code, output = commands.getstatusoutput("basename %s" % output)
+                        os.system('mv ' + output + '  '+curpwd)
                 elif image == "s1300":
                     check_call("find single_img_dir/ -name s1300-noremmc-apps.img | xargs cp -t %s/"
                                % (bin_dir), shell=True, cwd=im_path)
@@ -547,8 +543,7 @@ def main(argv):
                         fw_name = bin_dir + "/" + "qsdk-" + image + "-" + \
                             c.getVersion(image) + "-" + time.strftime("%m%d",
                                                                       time.localtime()) + os.path.splitext(output)[-1]
-                        os.system('mv ' + output + ' ' + fw_name)
-                    # return_code, output = commands.getstatusoutput("basename %s" % output)
+                        os.system('mv ' + output + '  '+curpwd)
                 elif image == "ap1300":
                     check_call("find single_img_dir/ -name ap1300-nornand-apps.img | xargs cp -t %s/"
                                % (bin_dir), shell=True, cwd=im_path)
@@ -559,8 +554,7 @@ def main(argv):
                         fw_name = bin_dir + "/" + "qsdk-" + image + "-" + \
                             c.getVersion(image) + "-" + time.strftime("%m%d",
                                                                       time.localtime()) + os.path.splitext(output)[-1]
-                        os.system('mv ' + output + ' ' + fw_name)
-                    # return_code, output = commands.getstatusoutput("basename %s" % output)
+                        os.system('mv ' + output + '  '+curpwd)
                 elif image == "b2200":
                     check_call("find single_img_dir/ -name b2200-noremmc-apps.img | xargs cp -t %s/"
                                % (bin_dir), shell=True, cwd=im_path)
@@ -571,8 +565,7 @@ def main(argv):
                         fw_name = bin_dir + "/" + "qsdk-" + image + "-" + \
                             c.getVersion(image) + "-" + time.strftime("%m%d",
                                                                       time.localtime()) + os.path.splitext(output)[-1]
-                        os.system('mv ' + output + ' ' + fw_name)
-                    # return_code, output = commands.getstatusoutput("basename %s" % output)
+                        os.system('mv ' + output + '  '+curpwd)
                 elif image == "ax1800":
                     check_call("find single_img_dir/ -name ax1800-nand-apps.img | xargs cp -t %s/"
                                % (bin_dir), shell=True, cwd=im_path)
@@ -583,12 +576,10 @@ def main(argv):
                         fw_name = bin_dir + "/" + "qsdk-" + image + "-" + \
                             c.getVersion(image) + "-" + time.strftime("%m%d",
                                                                       time.localtime()) + os.path.splitext(output)[-1]
-                        os.system('mv ' + output + ' ' + fw_name)
-                    # return_code, output = commands.getstatusoutput("basename %s" % output)
+                        os.system('mv ' + output + '  '+curpwd)
                 else:
                     check_call("find single_img_dir/ -maxdepth 1 -name *.img | xargs cp -t %s/"
                                % (bin_dir), shell=True, cwd=im_path)
-                    # return_code, output = commands.getstatusoutput("basename %s" % output)
 
                 print(
                     "------------------------------------------------------------------------")
@@ -608,7 +599,7 @@ def main(argv):
                         c.getVersion(image) + "-" + time.strftime("%m%d",
                                                                   time.localtime()) + os.path.splitext(output)[-1]
                 if output != "":
-                    os.system('mv ' + output + ' ' + fw_name)
+                    os.system('mv ' + output + '  '+curpwd)
 
                 print(
                     "------------------------------------------------------------------------")
@@ -630,7 +621,7 @@ def main(argv):
                             c.getVersion(image) + "-" + time.strftime("%m%d",
                                                                       time.localtime()) + os.path.splitext(output)[-1]
                     if output != "":
-                        os.system('mv ' + output + ' ' + fw_name)
+                        os.system('mv ' + output + '  '+curpwd)
 
                     print(
                         "------------------------------------------------------------------------")
@@ -649,7 +640,7 @@ def main(argv):
                             c.getVersion(image) + "-" + time.strftime("%m%d",
                                                                       time.localtime()) + os.path.splitext(output)[-1]
                     if output != "":
-                        os.system('mv ' + output + ' ' + fw_name)
+                        os.system('mv ' + output + '  '+curpwd)
 
                     print(
                         "------------------------------------------------------------------------")
@@ -669,7 +660,7 @@ def main(argv):
                             c.getVersion(image) + "-" + time.strftime("%m%d",
                                                                       time.localtime()) + os.path.splitext(output)[-1]
                     if output != "":
-                        os.system('mv ' + output + ' ' + fw_name)
+                        os.system('mv ' + output + '  '+curpwd)
 
                     print(
                         "------------------------------------------------------------------------")
@@ -691,7 +682,7 @@ def main(argv):
                         c.getVersion(image) + "-" + time.strftime("%m%d",
                                                                   time.localtime()) + os.path.splitext(output)[-1]
                 if output != "":
-                    os.system('mv ' + output + ' ' + fw_name)
+                    os.system('mv ' + output + '  '+curpwd)
 
                 print(
                     "------------------------------------------------------------------------")
@@ -709,9 +700,6 @@ def main(argv):
                                    (image, bin_dir), shell=True, cwd=im_path)
                         return_code, output = commands.getstatusoutput(
                             "find bin/ -name \"*%s*-factory.img\"" % (c.getProfile(image).lower()))
-                    # else:
-                     #   check_call("find bin/ -name \"*%s*ubi-factory*\" | xargs cp -t %s/" % (image, bin_dir), shell=True, cwd=im_path)
-                    #	return_code, output = commands.getstatusoutput("find bin/ -name \"*%s*ubi-factory*\"" % (c.getProfile(image).lower()))
 
                     if filename != "glinet/images.json":
                         fw_name = bin_dir + "/" + "openwrt-" + image + "-" + \
@@ -722,7 +710,7 @@ def main(argv):
                             c.getVersion(image) + "-" + time.strftime("%m%d",
                                                                       time.localtime()) + os.path.splitext(output)[-1]
                     if output != "":
-                        os.system('mv ' + output + ' ' + fw_name)
+                        os.system('mv ' + output + '  '+curpwd)
                         print("Copy " + output + " to " + fw_name)
 
         except:
@@ -731,13 +719,5 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    # sys.exit(main(sys.argv))
-    argv = sys.argv
-    pname = argv[0]
-    try:
-        (opts, args) = getopt.getopt(argv[1:],
-                                     "ap:e:b:f:c:lniho:j:",
-                                     ["all", "profile=", "extra=", "branch=", "files=", "config=", "list", "clean", "ignore", "help", "output", "offline", "json=", "custom="])
-    except getopt.GetoptError as e:
-        usage(pname)
-    print(opts, args)
+    sys.exit(main(sys.argv))
+  

@@ -1,7 +1,8 @@
-name: glinet-imagebuild-test
-
-on: workflow_dispatch
-
+name: glinet-imagebuild-release
+on:
+  push:
+    tags:
+      - "*"
 env:
   CUSTOM: rtty-openssl=https://api.github.com/repos/innet8/rtty/releases
   PACKAGES: coreutils-base64 bash oping luasocket kmod-ipt-iprange iptables-mod-iprange lua-cjson rtty-openssl -gl-cloud-ui
@@ -24,12 +25,13 @@ jobs:
           MODEL: ${{ matrix.mode }}
           PACKAGES: ${{env.PACKAGES}}
           CUSTOM: ${{env.CUSTOM}}
-
-      - name: Save Build Result
-        uses: actions/upload-artifact@v2
+          
+      - name: Release and Upload Assets
+        uses: softprops/action-gh-release@v1
         with:
-          name: bin
-          path: |
+          files: |
             *.bin
             *.img
             *.tar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
