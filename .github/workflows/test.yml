@@ -1,8 +1,9 @@
 name: test
 on: workflow_dispatch
 env:
-  CUSTOM: rtty-openssl=https://api.github.com/repos/innet8/rtty/releases
-  PACKAGES: coreutils-base64 bash oping luasocket kmod-ipt-iprange iptables-mod-iprange lua-cjson -gl-cloud-ui
+  CUSTOM: rtty-openssl=https://api.github.com/repos/innet8/rtty/releases,speedtest-cpp=https://api.github.com/repos/zzzzzhy/speedtest-cpp/releases,nginx-ssl=https://api.github.com/repos/zzzzzhy/hiui/releases,nginx-ssl-util=https://api.github.com/repos/zzzzzhy/hiui/releases
+  PACKAGES: coreutils-base64 bash oping luasocket kmod-ipt-iprange iptables-mod-iprange lua-cjson -gl-cloud-ui speedtest-cpp -gl-ui -fcgi -lighttpd-mod-fastcgi nginx-ssl nginx-mod-luci
+
 
 jobs:
   build:
@@ -11,7 +12,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [b1300]
+        mode: [b1300,ar750s]
 
     steps:
       - uses: actions/checkout@v3
