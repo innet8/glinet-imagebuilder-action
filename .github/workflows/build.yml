@@ -5,7 +5,7 @@ on:
       - "*"
 env:
   CUSTOM: rtty-openssl=https://api.github.com/repos/innet8/rtty/releases
-  PACKAGES: coreutils-base64 bash oping luasocket kmod-ipt-iprange iptables-mod-iprange lua-cjson rtty-openssl -gl-cloud-ui
+  PACKAGES: coreutils-base64 bash oping luasocket kmod-ipt-iprange iptables-mod-iprange lua-cjson rtty-openssl -gl-cloud-ui -gl-ui -fcgi -lighttpd-mod-fastcgi
 
 jobs:
   build:
