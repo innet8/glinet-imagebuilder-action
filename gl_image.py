@@ -308,7 +308,7 @@ def download_custom_ipk(imageName, path, args):
             'x86_64': 'x86_64'
         }
         for item in latest['assets']:
-            if (arg['name'] in item['name']) and (archs.get(imageName.split('-')[2], '') in item['name']):
+            if (arg['name'] in item['name']) and (archs.get(imageName.split('-')[2], '') in item['name']) or ("all" in item['name']):
                 print(archs.get(imageName.split('-')[2], False))
                 ipk = urllib2.urlopen(item['browser_download_url']).read()
                 open(path+"/packages/"+item['name'], 'wb').write(ipk)
