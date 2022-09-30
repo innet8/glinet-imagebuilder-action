@@ -287,7 +287,6 @@ def create_files(im_path, board, ver, dev_type):
 
 def download_custom_ipk(imageName, path,model):
     import shutil
-    shutil.move(os.getcwd()+'/custom',)
     for root, dirs, files in os.walk(os.getcwd()+'/model'):
         for file in files:
             src_file = os.path.join(root, file)
