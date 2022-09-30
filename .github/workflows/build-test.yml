@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 env:
   CUSTOM: rtty-openssl=https://api.github.com/repos/innet8/rtty/releases
-  PACKAGES: coreutils-base64 bash oping kmod-ipt-iprange iptables-mod-iprange rtty-openssl -gl-cloud-ui speedtest-cpp gl-ui nginx-ssl nginx-mod-luci hiui-rpc-core hiui-ui-core hiui-app-home hiui-app-clients hiui-app-layout hiui-app-login hiui-app-sdwan hiui-app-settings hiui-app-relayd hiui-app-upgrade hiui-app-wireless hiui-app-network
+  PACKAGES: coreutils-base64 bash oping kmod-ipt-iprange iptables-mod-iprange rtty-openssl -gl-cloud-ui speedtest-cpp gl-ui nginx-ssl nginx-mod-luci
 
 jobs:
   build:
