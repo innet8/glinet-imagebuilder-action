@@ -2,7 +2,7 @@ name: "OpenWrt Imagesbuilder"
 description: "Build Glinet Imagesbuilder"
 author: aparcar
 runs:
-  using: 'composite'
+  using: "composite"
   steps:
     - run: |
         echo "::set-output name=artifacts_dir::${ARTIFACTS_DIR:-$GITHUB_WORKSPACE}"
@@ -17,7 +17,8 @@ runs:
       shell: bash
     - run: |
         echo "${MODEL}---------${PACKAGES}-------------${CUSTOM}"
-        sudo python2 $GITHUB_WORKSPACE/gl_image.py -i -p ${MODEL} -e "${PACKAGES}" --custom "${CUSTOM}"
+
+        sudo python2 $GITHUB_WORKSPACE/gl_image.py -i -p ${MODEL} -e "${PACKAGES}"
       shell: bash
     - run: sudo chown -R --reference=${{ steps.inputs.outputs.artifacts_dir }}/.. ${{ steps.inputs.outputs.artifacts_dir }}
       shell: bash
