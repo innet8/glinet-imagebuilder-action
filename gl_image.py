@@ -285,34 +285,13 @@ def create_files(im_path, board, ver, dev_type):
 
     return tmpfiles
 
-def download_custom_ipk(imageName, path, args):
-    import urllib2
-    ipks = args.split(',')
-    if not ipks or len(ipks) == 0:
-        sys.exit(1)
-    _tmp = []
-    for item in ipks:
-        i = {}
-        i['name'] = item.split('=')[0]
-        i['url'] = item.split('=')[1]
-        _tmp.append(i)
-    for arg in _tmp:
-        response = urllib2.urlopen(arg['url'])
-        releases = response.read()
-        latest = max(json.loads(releases), key=lambda x:x["published_at"])
-        archs = {
-            'ath79': 'mips_24kc',
-            'ramips': 'mipsel_24kc',
-            'mvebu': 'aarch64_cortex-a53',
-            'ipq': 'ipq',
-            'x86_64': 'x86_64'
-        }
-        for item in latest['assets']:
-            if (arg['name'] in item['name']) and (archs.get(imageName.split('-')[2], '') in item['name']) or ("all" in item['name']):
-                print(archs.get(imageName.split('-')[2], False))
-                ipk = urllib2.urlopen(item['browser_download_url']).read()
-                open(path+"/packages/"+item['name'], 'wb').write(ipk)
-                break
+def download_custom_ipk(imageName, path,model):
+    import shutil
+    shutil.move(os.getcwd()+'/custom',)
+    for root, dirs, files in os.walk(os.getcwd()+'/model'):
+        for file in files:
+            src_file = os.path.join(root, file)
+            shutil.copy(src_file, path+"/packages/")
     return
 
 def main(argv):
@@ -489,10 +468,7 @@ def main(argv):
             merge_files(files, tmpfiles)
 
         # Download custom ipk
-        print('------------------------------------',
-              extra_ipks, profile, customipk)
-        if customipk:
-            download_custom_ipk(c.getImagebuilderName(image), im_path, customipk)
+        download_custom_ipk(c.getImagebuilderName(image), im_path,profile)
 
         # Output directory
         compile_time = time.strftime('%Y%m%d', time.localtime(time.time()))

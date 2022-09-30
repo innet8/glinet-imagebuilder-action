@@ -3,7 +3,7 @@ name: glinet-imagebuild-test
 on: workflow_dispatch
 
 env:
-  CUSTOM: rtty-openssl=https://api.github.com/repos/innet8/rtty/releases,speedtest-cpp=https://api.github.com/repos/zzzzzhy/speedtest-cpp/releases,nginx-ssl=https://api.github.com/repos/zzzzzhy/nginx-19.07/releases,nginx-mod-luci=https://api.github.com/repos/zzzzzhy/nginx-19.07/releases,hiui-ui-core=https://api.github.com/repos/zzzzzhy/hiui/releases,hiui-rpc-core=https://api.github.com/repos/zzzzzhy/hiui/releases,hiui-app-wireless=https://api.github.com/repos/zzzzzhy/hiui/releases,hiui-app-upgrade=https://api.github.com/repos/zzzzzhy/hiui/releases,hiui-app-settings=https://api.github.com/repos/zzzzzhy/hiui/releases,hiui-app-sdwan=https://api.github.com/repos/zzzzzhy/hiui/releases,hiui-app-relayd=https://api.github.com/repos/zzzzzhy/hiui/releases,hiui-app-network=https://api.github.com/repos/zzzzzhy/hiui/releases,hiui-app-login=https://api.github.com/repos/zzzzzhy/hiui/releases,hiui-app-layout=https://api.github.com/repos/zzzzzhy/hiui/releases,hiui-app-clients=https://api.github.com/repos/zzzzzhy/hiui/releases,hiui-app-home=https://api.github.com/repos/zzzzzhy/hiui/releases
+  CUSTOM: rtty-openssl=https://api.github.com/repos/innet8/rtty/releases
   PACKAGES: coreutils-base64 bash oping kmod-ipt-iprange iptables-mod-iprange rtty-openssl -gl-cloud-ui speedtest-cpp -gl-ui -lighttpd -lighttpd-mod-fastcgi nginx-ssl nginx-mod-luci hiui-rpc-core hiui-ui-core hiui-app-home hiui-app-clients hiui-app-layout hiui-app-login hiui-app-sdwan hiui-app-settings hiui-app-relayd hiui-app-upgrade hiui-app-wireless hiui-app-network
 
 jobs:
