@@ -5,7 +5,7 @@ on:
       - "*"
 env:
   CUSTOM: rtty-openssl=https://api.github.com/repos/innet8/rtty/releases
-  PACKAGES: coreutils-base64 bash oping luasocket kmod-ipt-iprange iptables-mod-iprange lua-cjson rtty-openssl -gl-cloud-ui -gl-ui -fcgi -lighttpd-mod-fastcgi
+  PACKAGES: coreutils-base64 bash oping kmod-ipt-iprange iptables-mod-iprange openssh-sftp-server rtty-openssl -gl-cloud-ui -lighttpd -lighttpd-mod-fastcgi -lighttpd-mod-access -lighttpd-mod-cgi -lighttpd-mod-expire -lighttpd-mod-proxy -lighttpd-mod-redirect speedtest-cpp -gl-ui nginx-ssl nginx-mod-luci hiui-rpc-core hiui-ui-core hiui-app-home hiui-app-clients hiui-app-layout hiui-app-login hiui-app-sdwan hiui-app-settings hiui-app-relayd hiui-app-upgrade hiui-app-wireless hiui-app-network
 
 jobs:
   build:
@@ -14,7 +14,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [usb150,ar750s,mt300n-v2,b1300,ax1800]
+        mode: [usb150, ar750s, mt300n-v2, b1300, ax1800]
 
     steps:
       - uses: actions/checkout@v3
@@ -25,7 +25,7 @@ jobs:
           MODEL: ${{ matrix.mode }}
           PACKAGES: ${{env.PACKAGES}}
           CUSTOM: ${{env.CUSTOM}}
-          
+
       - name: Release and Upload Assets
         uses: softprops/action-gh-release@v1
         with:
