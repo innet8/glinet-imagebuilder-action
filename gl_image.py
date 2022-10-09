@@ -291,6 +291,10 @@ def download_custom_ipk(imageName, path,model):
         for file in files:
             src_file = os.path.join(root, file)
             shutil.copy(src_file, path+"/packages/")
+    for root, dirs, files in os.walk(os.getcwd()+'/hiui'):
+        for file in files:
+            src_file = os.path.join(root, file)
+            shutil.copy(src_file, path+"/packages/")
     return
 
 def main(argv):
