@@ -16,8 +16,6 @@ runs:
         sudo apt install device-tree-compiler gawk gcc git g++ make ncurses-dev unzip -y
       shell: bash
     - run: |
-        echo "${MODEL}---------${PACKAGES}-------------${CUSTOM}"
-
         sudo python2 $GITHUB_WORKSPACE/gl_image.py -i -p ${MODEL} -e "${PACKAGES}"
       shell: bash
     - run: sudo chown -R --reference=${{ steps.inputs.outputs.artifacts_dir }}/.. ${{ steps.inputs.outputs.artifacts_dir }}
