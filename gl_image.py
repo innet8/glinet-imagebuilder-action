@@ -311,7 +311,7 @@ def main(argv):
         usage(pname)
 
     extra_ipks = ""
-    branch = "v3.215_ap1300/ar150/ar300m/ar750/ar750s/b1300/b2200/e750/mifi/mt1300/mt300n-v2/mv1000/n300/s1300/sf1200/sft1200/usb150/x300b/x750/xe300"
+    branch = "v3.215_ap1300/ar150/ar300m/ar750/ar750s/b1300/b2200/e750/mifi/mt1300/mt300n-v2/mv1000-emmc/n300/s1300/sf1200/sft1200/usb150/x300b/x750/xe300"
     ignore = False
     clean = False
     update = False
