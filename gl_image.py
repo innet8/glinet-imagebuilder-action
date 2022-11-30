@@ -285,9 +285,9 @@ def create_files(im_path, board, ver, dev_type):
 
     return tmpfiles
 
-def download_custom_ipk(imageName, path,model):
+def download_custom_ipk(imageName, path,board):
     import shutil
-    for root, dirs, files in os.walk(os.getcwd()+'/'+model):
+    for root, dirs, files in os.walk(os.getcwd()+'/'+board):
         for file in files:
             src_file = os.path.join(root, file)
             shutil.copy(src_file, path+"/packages/")
@@ -471,7 +471,7 @@ def main(argv):
             merge_files(files, tmpfiles)
 
         # Download custom ipk
-        download_custom_ipk(c.getImagebuilderName(image), im_path,profile)
+        download_custom_ipk(c.getImagebuilderName(image), im_path,board)
 
         # Output directory
         compile_time = time.strftime('%Y%m%d', time.localtime(time.time()))
