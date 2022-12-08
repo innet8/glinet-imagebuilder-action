@@ -306,7 +306,7 @@ def main(argv):
     try:
         (opts, args) = getopt.getopt(argv[1:],
                                      "ap:e:b:f:c:lniho:j:",
-                                     ["all", "profile=", "extra=", "branch=", "files=", "config=", "list", "clean", "ignore", "help", "output", "offline", "json=", "custom="])
+                                     ["all", "profile=", "extra=", "branch=", "files=", "config=", "list", "clean", "ignore", "help", "output", "offline", "json=", "version="])
     except getopt.GetoptError as e:
         usage(pname)
 
@@ -322,7 +322,7 @@ def main(argv):
     files = ""
     build_all = False
     images = []
-    customipk = ''
+    version = ''
 
     for (o, v) in opts:
         if o in ("-a", "--all"):
@@ -355,8 +355,8 @@ def main(argv):
             sys.exit(1)
         if o in ("-j", "--json"):
             filename = v
-        if o in ("--custom"):
-            customipk = v
+        if o in ("--version"):
+            version = v
 
     dir_name = "glinet"
     curpwd = os.getcwd()
@@ -485,7 +485,7 @@ def main(argv):
 
         try:
             check_call("echo %s > release" %
-                       (c.getVersion(image)), shell=True, cwd=im_path)
+                       (c.getVersion(image) if version=="" else version), shell=True, cwd=im_path)
             os.environ['OFFLINE'] = str(offline)
             check_call("make image \
                     PROFILE=%s \
