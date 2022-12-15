@@ -463,7 +463,7 @@ def main(argv):
 
         # Prepare files
         tmpfiles = create_files(
-            im_path, board, c.getVersion(image), c.getProduct(image))
+            im_path, board, c.getVersion(image) if version=="" else version, c.getProduct(image))
         if c.getFilesPath(image):
             merge_files(c.getFilesPath(image), tmpfiles)
 
