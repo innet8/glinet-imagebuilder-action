@@ -13,7 +13,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        mode: [usb150, ar750s, mt300n-v2, b1300, ax1800]
+        mode: [usb150, ar750s, mt300n-v2, b1300, ax1800,b2200]
 
     steps:
       - uses: actions/checkout@v3
