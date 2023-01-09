@@ -1,0 +1,34 @@
+feeds:
+  - name: custom
+    path: ../feeds_dir/custom
+
+packages:
+  - coreutils-base64
+  - curl
+  - ip-full
+  - iptables-mod-filter
+  - iptables-mod-tproxy
+  - bash
+  - oping
+  - kmod-ipt-iprange
+  - iptables-mod-iprange
+  - rtty-openssl
+  - dnsmasq-full
+  - nginx-ssl
+  - nginx-mod-luci
+  - hiui-rpc-core
+  - hiui-ui-core
+  - hiui-app-clients
+  - hiui-app-login
+  - hiui-app-sdwan
+  - hiui-app-settings
+  - hiui-app-relayd
+  - hiui-app-upgrade
+  - hiui-app-wireless
+  - hiui-app-network
+
+
+diffconfig: |
+  CONFIG_PACKAGE_dnsmasq=n
+  CONFIG_PACKAGE_wpad-basic=n
+  CONFIG_PACKAGE_wpad=n

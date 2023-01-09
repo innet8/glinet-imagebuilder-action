@@ -1,0 +1,56 @@
+name: build gl.inet
+
+on:
+  workflow_dispatch:
+    inputs:
+      device:
+        description: '选择设备'     
+        required: true
+        default: 'target_wlan_ap-gl-ax1800' 
+        type: choice
+        options:
+        - target_wlan_ap-gl-ax1800
+        - target_wlan_ap-gl-axt1800
+        - target_wlan_ap-gl-ax1800-5-4
+        - target_wlan_ap-gl-axt1800-5-4
+        - target_ipq40xx_gl-a1300
+        - target_mt7981_gl-mt2500
+        - target_mediatek_gl-mt3000
+        - target_siflower_gl-sf1200
+        - target_siflower_gl-sft1200
+        - target_ramips_gl-mt1300
+
+      ui:
+        description: '是否包含官方UI (目前支持IPQ60XX系列和MT2500)'
+        required: false
+        type: boolean
+        
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+    - name: update
+      run: |
+        sudo apt update
+        sudo apt upgrade -y
+        sudo apt install python build-essential libncurses5-dev gawk git libssl-dev gettext zlib1g-dev swig unzip time rsync python3 python3-setuptools python3-yaml subversion -y
+    - name: make 
+      run: |
+        ./build.sh ~ ${{ inputs.device }} ${{ inputs.ui }}
+        
+    - name: Organize files
+      id: organize
+      if: true && !failure() && !cancelled()
+      run: |
+        cd ~/firmware
+        echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+        cd ~/packages
+        echo "PACKAGES=$PWD" >> $GITHUB_ENV
+        echo "status=success" >> $GITHUB_OUTPUT 
+    - name: Upload firmware directory
+      uses: actions/upload-artifact@main
+      if: steps.organize.outputs.status == 'success' && !cancelled() && !failure()
+      with:
+        name: OpenWrt_firmware${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+        path: ${{ env.FIRMWARE }}
