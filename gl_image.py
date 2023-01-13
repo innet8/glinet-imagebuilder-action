@@ -187,6 +187,8 @@ class Config:
             pkg_list = self.data["profiles"][name]["packages"].split(' ')
             for pkg in pkg_list:
                 pkg_var = re.search(r'^\$(.*)', pkg)
+                if pkg_var == "ui4.0":
+                    continue
                 if pkg_var and self.data.has_key("packages"):
                     for (k, v) in self.data["packages"].items():
                         if k == pkg_var.group(1):
@@ -441,7 +443,6 @@ def main(argv):
         # Offline mode
         if c.getProfile(image) != "QSDK_Premium":
             if offline:
-                print("ttttttttttttttttttttttttttttttttttttttttt")
                 check_call("cp %s/glinet/%s/Packages dl/glinet" %
                            (os.getcwd(), board), shell=True, cwd=im_path)
                 check_call("cp packages/Packages dl/imagebuilder",
