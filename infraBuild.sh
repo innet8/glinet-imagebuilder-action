@@ -22,11 +22,12 @@ if [ ! -n "$ui" ]; then
         ui=true
 fi
 echo "Start..."
-
+git config --global user.email "zzzzzhy@github.com"
+git config --global user.name "zzzzzhy"
 #clone source tree 
 git clone https://github.com/gl-inet/gl-infra-builder.git $base/gl-infra-builder
 mkdir -p $base/gl-infra-builder/feeds/custom/
-git clone https://github.com/zzzzzhy/hiui.git $base/gl-infra-builder/feeds/custom/hiui
+git clone  https://user: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@ghproxy.com/https://github.com/zzzzzhy/hiui.git $base/gl-infra-builder/feeds/custom/hiui
 git clone -b hi-openwrt-package https://github.com/innet8/rtty.git $base/gl-infra-builder/feeds/custom/rtty
 cp -r *.yml $base/gl-infra-builder/profiles
 cd $base/gl-infra-builder
