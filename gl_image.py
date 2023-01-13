@@ -668,7 +668,7 @@ def main(argv):
                     "------------------------------------------------------------------------")
                 print("Copy " + output + " to " + fw_name)
 
-                if c.getProfile(image).find('nand') != -1 or c.getProfile(image).find('xe300-iot') != -1:
+                if c.getProfile(image).find('nand') != -1 or c.getProfile(image).find('xe300-iot') != -1 or c.getProfile(image).find('axt1800') != -1:
                     if image == "e750-1907":
                         check_call("find bin/ -name \"*%s*squashfs-factory*\" | xargs cp -t %s/" %
                                    (image, bin_dir), shell=True, cwd=im_path)
