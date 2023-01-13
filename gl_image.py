@@ -187,7 +187,7 @@ class Config:
             pkg_list = self.data["profiles"][name]["packages"].split(' ')
             for pkg in pkg_list:
                 pkg_var = re.search(r'^\$(.*)', pkg)
-                if pkg_var == "ui4.0" or pkg_var == "glinet4.0":
+                if pkg_var and (pkg_var.group() == "$ui4.0" or pkg_var.group() == "$glinet4.0"):
                     continue
                 if pkg_var and self.data.has_key("packages"):
                     for (k, v) in self.data["packages"].items():
