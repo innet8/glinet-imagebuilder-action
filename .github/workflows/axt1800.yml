@@ -1,4 +1,4 @@
-name: glinet-imagebuild-test
+name: glinet-imagebuild-axt1800
 
 on: workflow_dispatch
 
