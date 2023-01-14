@@ -151,7 +151,7 @@ class Config:
 
     def getImagebuilderPath(self, name):
         if self.data["profiles"][name].has_key("imagebuilder"):
-            return self.data["profiles"][name]["imagebuilder"]
+            return ""
 
     def getImagebuilderVersion(self, name):
         if self.data["profiles"][name].has_key("imagebuilder"):
